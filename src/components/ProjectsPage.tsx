@@ -34,7 +34,7 @@ export function ProjectsPage() {
         >
           <h1 className="text-5xl md:text-6xl mb-4">Projects</h1>
           <p className="text-xl text-muted-foreground max-w-[600px]">
-            A curated selection of work spanning web applications, design systems, and digital experiences.
+            A collection of projects showcasing web and mobile applications, design systems, and user-focused digital solutions.
           </p>
         </motion.div>
       </section>

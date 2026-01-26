@@ -104,7 +104,7 @@ export function HomePage() {
         </div>
 
         <div className="space-y-16">
-          {projects.map((project, index) => (
+          {projects.filter(project => project.featured).map((project, index) => (
             <Link
               key={project.id}
               to={`/projects/${project.id}`}
