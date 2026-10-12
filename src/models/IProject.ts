@@ -5,6 +5,7 @@ export interface IProject {
     image?: string;
     year: string;
     featured: boolean;
+    origin: 'personal' | 'company';
     heroImage?: string;
     client?: string;
     role?: string;

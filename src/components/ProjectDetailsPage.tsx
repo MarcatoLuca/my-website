@@ -3,30 +3,32 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, ExternalLink, Code2 } from 'lucide-react';
 import { projects } from '../data/Project';
 import { Footer } from './sub/Footer';
+import { useLanguage } from '../i18n/LanguageProvider';
 
 export function ProjectDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { lang, strings } = useLanguage();
 
   // Mock project data
 
 
-  const project = projects.find(p => p.id === id);
+  const project = projects[lang].find(p => p.id === id);
 
   if (!project) {
     return (
       <div className="min-h-screen pt-20 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-4xl mb-4">Project Not Found</h1>
+          <h1 className="text-4xl mb-4">{strings.projectDetail.notFoundTitle}</h1>
           <Link to="/projects" className="text-accent hover:underline">
-            Back to Projects
+            {strings.projectDetail.backToProjects}
           </Link>
         </div>
       </div>
     );
   }
 
-  const nextProjectId = String((parseInt(id || '1') % projects.length) + 1);
+  const nextProjectId = String((parseInt(id || '1') % projects[lang].length) + 1);
 
   return (
     <div className="min-h-screen pt-20">
@@ -37,7 +39,7 @@ export function ProjectDetailPage() {
           className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          Back to Projects
+          {strings.projectDetail.backToProjects}
         </button>
       </div>
 
@@ -46,13 +48,15 @@ export function ProjectDetailPage() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-        className="w-full aspect-[21/9] md:aspect-[21/7] overflow-hidden bg-muted"
+        className="w-full"
       >
-        <img
-          src={project.heroImage}
-          alt={project.title}
-          className="w-full h-full object-cover"
-        />
+        {project.heroImage && (
+          <img
+            src={project.heroImage}
+            alt={project.title}
+            className="w-full h-auto max-h-[70vh] object-contain mx-auto"
+          />
+        )}
       </motion.section>
 
       {/* Project Info */}
@@ -62,42 +66,58 @@ export function ProjectDetailPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
         >
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm mb-12 pb-12 border-b border-border">
+          <div className="grid grid-cols-2 md:grid-cols-[0.7fr_1.3fr_1.3fr_0.7fr] gap-4 text-sm mb-12 pb-12 border-b border-border">
             <div>
-              <span className="text-muted-foreground block mb-1">Year</span>
+              <span className="text-muted-foreground block mb-1">{strings.projectDetail.year}</span>
               <span>{project.year}</span>
             </div>
             <div>
-              <span className="text-muted-foreground block mb-1">Client</span>
+              <span className="text-muted-foreground block mb-1">{strings.projectDetail.client}</span>
               <span>{project.client}</span>
             </div>
             <div>
-              <span className="text-muted-foreground block mb-1">Role</span>
+              <span className="text-muted-foreground block mb-1">{strings.projectDetail.role}</span>
               <span>{project.role}</span>
             </div>
             <div className="flex gap-2">
-              <a
-                href={project.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 hover:bg-muted rounded-md transition-colors"
-                aria-label="Visit project"
-              >
-                <ExternalLink className="w-4 h-4" />
-              </a>
-              <a
-                href={project.github}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="p-2 hover:bg-muted rounded-md transition-colors"
-                aria-label="View on GitHub"
-              >
-                <Code2 className="w-4 h-4" />
-              </a>
+              {(project.link || project.github) && (
+                <div>
+                  <span className="text-muted-foreground block mb-1">{strings.projectDetail.links}</span>
+                  <div className="flex gap-2 -ml-2">
+                    {project.link && (
+                      <a
+                        href={project.link}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 hover:bg-muted rounded-md transition-colors"
+                        aria-label={strings.projectDetail.visitProject}
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    )}
+                    {project.github && (
+                      <a
+                        href={project.github}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 hover:bg-muted rounded-md transition-colors"
+                        aria-label={strings.projectDetail.viewOnGithub}
+                      >
+                        <Code2 className="w-4 h-4" />
+                      </a>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
-          <h1 className="text-4xl md:text-5xl mb-6">{project.title}</h1>
+          <h1 className="text-4xl md:text-5xl mb-6">
+            {project.title}
+            <span className="ml-3 align-middle px-3 py-1 text-xs border border-border rounded-full text-muted-foreground">
+              {project.origin === 'personal' ? strings.projectBadges.personal : strings.projectBadges.company}
+            </span>
+          </h1>
           <p className="text-xl text-muted-foreground leading-relaxed mb-8">
             {project.description}
           </p>
@@ -119,21 +139,21 @@ export function ProjectDetailPage() {
           className="space-y-12"
         >
           <div>
-            <h2 className="text-2xl mb-4">Overview</h2>
+            <h2 className="text-2xl mb-4">{strings.projectDetail.overview}</h2>
             <p className="text-muted-foreground leading-relaxed">
               {project.overview}
             </p>
           </div>
 
           <div>
-            <h2 className="text-2xl mb-4">Challenge</h2>
+            <h2 className="text-2xl mb-4">{strings.projectDetail.challenge}</h2>
             <p className="text-muted-foreground leading-relaxed">
               {project.challenge}
             </p>
           </div>
 
           <div>
-            <h2 className="text-2xl mb-4">Solution</h2>
+            <h2 className="text-2xl mb-4">{strings.projectDetail.solution}</h2>
             <p className="text-muted-foreground leading-relaxed">
               {project.solution}
             </p>
@@ -150,12 +170,11 @@ export function ProjectDetailPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="w-full aspect-[16/9] overflow-hidden bg-muted"
           >
             <img
               src={image}
               alt={`${project.title} screenshot ${index + 1}`}
-              className="w-full h-full object-cover"
+              className="w-full h-auto object-contain"
             />
           </motion.div>
         ))}
@@ -165,19 +184,19 @@ export function ProjectDetailPage() {
       <section className="max-w-[1200px] mx-auto px-6 py-24 border-t border-border">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
           <div>
-            <span className="text-sm text-muted-foreground block mb-2">Next Project</span>
+            <span className="text-sm text-muted-foreground block mb-2">{strings.projectDetail.nextProject}</span>
             <Link
               to={`/projects/${nextProjectId}`}
               className="text-3xl hover:opacity-70 transition-opacity"
             >
-              {projects.find(p => p.id === nextProjectId)?.title}
+              {projects[lang].find(p => p.id === nextProjectId)?.title}
             </Link>
           </div>
           <Link
             to="/projects"
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
-            Back to All Projects
+            {strings.projectDetail.backToAllProjects}
           </Link>
         </div>
       </section>

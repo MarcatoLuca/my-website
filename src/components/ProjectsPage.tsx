@@ -2,8 +2,10 @@ import { Link } from 'react-router-dom';
 import { motion, cubicBezier } from 'framer-motion';
 import { projects } from '../data/Project';
 import { Footer } from './sub/Footer';
+import { useLanguage } from '../i18n/LanguageProvider';
 
 export function ProjectsPage() {
+  const { lang, strings } = useLanguage();
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -32,9 +34,9 @@ export function ProjectsPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         >
-          <h1 className="text-5xl md:text-6xl mb-4">Projects</h1>
+          <h1 className="text-5xl md:text-6xl mb-4">{strings.projectsPage.title}</h1>
           <p className="text-xl text-muted-foreground max-w-[600px]">
-            A collection of projects showcasing web and mobile applications, design systems, and user-focused digital solutions.
+            {strings.projectsPage.subtitle}
           </p>
         </motion.div>
       </section>
@@ -47,7 +49,7 @@ export function ProjectsPage() {
         className="max-w-[1200px] mx-auto px-6 pb-24"
       >
         <div className="space-y-24">
-          {projects.map((project, index) => (
+          {projects[lang].map((project, index) => (
             <motion.div key={project.id} variants={itemVariants}>
               <Link
                 to={`/projects/${project.id}`}
@@ -56,19 +58,24 @@ export function ProjectsPage() {
                 <div className={`grid md:grid-cols-2 gap-8 md:gap-12 items-center ${index % 2 === 1 ? 'md:grid-flow-dense' : ''}`}>
                   {/* Image */}
                   <div className={index % 2 === 1 ? 'md:col-start-2' : ''}>
-                    <div className="aspect-[4/3] overflow-hidden bg-muted">
+                    {project.image && (
                       <img
                         src={project.image}
                         alt={project.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                        className="w-full h-auto object-contain group-hover:scale-105 transition-transform duration-700"
                       />
-                    </div>
+                    )}
                   </div>
 
                   {/* Content */}
                   <div className={`space-y-4 ${index % 2 === 1 ? 'md:col-start-1 md:row-start-1' : ''}`}>
                     <div className="space-y-2">
-                      <span className="text-sm text-muted-foreground">{project.year}</span>
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm text-muted-foreground">{project.year}</span>
+                        <span className="px-2 py-0.5 text-xs border border-border rounded-full text-muted-foreground">
+                          {project.origin === 'personal' ? strings.projectBadges.personal : strings.projectBadges.company}
+                        </span>
+                      </div>
                       <h2 className="text-3xl md:text-4xl group-hover:opacity-70 transition-opacity">
                         {project.title}
                       </h2>
